@@ -19,6 +19,8 @@ const initialRover: Rover = {
     position: { x: 0, y: 0 }
 };
 
+type RoverTransformation = (rover: Rover) => Rover;
+
 export const execute = (rover: Rover = initialRover) =>
     (commands: Commands): Rover => {
         if (commands.length === 0) {
@@ -31,30 +33,84 @@ export const execute = (rover: Rover = initialRover) =>
     };
 
 const processCommand = (firstCommand: Command, rover: Rover): Rover => {
-    if (firstCommand === 'M') {
-        if (rover.direction === 'N') {
-            const newY: Coordinate = ((rover.position.y + 1) % 10) as Coordinate;
-            return {
-                direction: rover.direction,
-                position: { x: 0, y: newY }
-            };
-        }
-        if (rover.direction === 'E') {
-            const newX: Coordinate = ((rover.position.x + 1) % 10) as Coordinate;
-            return {
-                direction: rover.direction,
-                position: { ...rover.position, x: newX }
-            };
-        }
+    return COMMAND_HANDLERS[firstCommand](rover);
+};
 
+const COMMAND_HANDLERS: Record<Command, RoverTransformation> = {
+    'M': (rover) => MOVEMENTS[rover.direction](rover),
+    'R': (rover) => ROTATIONS[rover.direction].right(rover),
+    'L': (rover) => ROTATIONS[rover.direction].left(rover)
+}
+
+const moveNorth: RoverTransformation = (rover: Rover) => ({
+        ...rover,
+        position: {
+            ...rover.position,
+            y: wrapCoordinate(rover.position.y + 1)
+        }
+    });
+
+const moveEast: RoverTransformation = (rover: Rover) => ({
+        ...rover,
+        position: {
+            ...rover.position,
+            x: wrapCoordinate(rover.position.x + 1)
+        }
     }
-    if (firstCommand === 'R') {
-        return {
-            direction: 'E',
+);
+
+const moveSouth: RoverTransformation = (rover: Rover) => ({
+        ...rover,
+        position: {
+            ...rover.position,
+            y: wrapCoordinate(rover.position.y - 1)
+        }
+    }
+);
+
+const moveWest: RoverTransformation = (rover: Rover) => {
+    return ({
+            ...rover,
             position: {
-                ...rover.position
+                ...rover.position,
+                x: wrapCoordinate(rover.position.x - 1)
             }
-        };
-    }
-    throw new Error(`Unsupported command: ${firstCommand}`);
+        }
+    );
+};
+
+const wrapCoordinate = (n: number) => ((n % 10 + 10) % 10) as Coordinate;
+
+const MOVEMENTS: Record<Direction, RoverTransformation> = {
+    N: moveNorth,
+    E: moveEast,
+    S: moveSouth,
+    W: moveWest
+};
+
+const faceWest: RoverTransformation = (rover: Rover) => ({
+    ...rover,
+    direction: 'W'
+});
+
+const faceNorth: RoverTransformation = (rover: Rover) => ({
+    ...rover,
+    direction: 'N'
+});
+
+const faceEast: RoverTransformation = (rover: Rover) => ({
+    ...rover,
+    direction: 'E'
+});
+
+const faceSouth: RoverTransformation = (rover: Rover) => ({
+    ...rover,
+    direction: 'S'
+});
+
+const ROTATIONS: Record<Direction, {left: RoverTransformation, right: RoverTransformation}> = {
+    'N': { left: faceWest, right: faceEast},
+    'E': { left: faceNorth, right: faceSouth},
+    'S': { left: faceEast, right: faceWest},
+    'W': { left: faceSouth, right: faceNorth},
 };
