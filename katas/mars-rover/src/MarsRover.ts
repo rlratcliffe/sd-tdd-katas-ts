@@ -32,10 +32,28 @@ export const execute = (rover: Rover = initialRover) =>
 
 const processCommand = (firstCommand: Command, rover: Rover): Rover => {
     if (firstCommand === 'M') {
-        const newY: Coordinate = ((rover.position.y + 1) % 10) as Coordinate;
+        if (rover.direction === 'N') {
+            const newY: Coordinate = ((rover.position.y + 1) % 10) as Coordinate;
+            return {
+                direction: rover.direction,
+                position: { x: 0, y: newY }
+            };
+        }
+        if (rover.direction === 'E') {
+            const newX: Coordinate = ((rover.position.x + 1) % 10) as Coordinate;
+            return {
+                direction: rover.direction,
+                position: { ...rover.position, x: newX }
+            };
+        }
+
+    }
+    if (firstCommand === 'R') {
         return {
-            direction: 'N',
-            position: { x: 0, y: newY }
+            direction: 'E',
+            position: {
+                ...rover.position
+            }
         };
     }
     throw new Error(`Unsupported command: ${firstCommand}`);

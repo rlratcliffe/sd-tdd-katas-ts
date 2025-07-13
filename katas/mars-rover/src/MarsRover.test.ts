@@ -6,9 +6,13 @@ describe('Mars Rover', () => {
         verify(execute)()([])({ direction: 'N', position: { x: 0, y: 0 } });
     });
 
-    it('should move', () => {
-        verify(execute)()(['M'])({ direction: 'N', position: { x: 0, y: 1 } });
-        verify(execute)()(['M', 'M'])({ direction: 'N', position: { x: 0, y: 2 } });
+    it('should move north and wrap around the board', () => {
+        verify(execute)()(['M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M', 'M',])({ direction: 'N', position: { x: 0, y: 1 } });
+    });
+
+    it('should move east and wrap around the board', () => {
+        verify(execute)()(['R'])({ direction: 'E', position: { x: 0, y: 0 } });
+        verify(execute)()(['R', 'M'])({ direction: 'E', position: { x: 1, y: 0 } });
     });
 });
 
