@@ -1,14 +1,27 @@
 {
-  "name": "javascript-tdd-katas",
+  "name": "tdd-katas-ts",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "TypeScript TDD Katas - Multi-module monorepo",
+  "private": true,
+  "workspaces": [
+    "katas/*"
+  ],
   "scripts": {
-    "test": "jest --watchAll"
+    "test": "npm run test --workspaces",
+    "test:watch": "npm run test:watch --workspaces",
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "lint": "eslint . --ext .ts,.tsx"
   },
   "author": "Steven Diamante",
   "license": "ISC",
-  "dependencies": {
-    "jest": "^26.6.3"
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.42.0",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.0"
   }
 }
