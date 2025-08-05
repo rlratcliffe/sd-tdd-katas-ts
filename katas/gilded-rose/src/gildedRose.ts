@@ -92,6 +92,19 @@ class BackstagePass extends ItemCategory {
     }
 }
 
+export class Conjured extends ItemCategory {
+
+    protected updateExpired(item: Item) {
+        this.decrementQuality(item);
+        this.decrementQuality(item);
+    }
+
+    protected updateItemQuality(item: Item) {
+        this.decrementQuality(item);
+        this.decrementQuality(item);
+    }
+}
+
 export class GildedRose {
     items: Array<Item>;
 
@@ -115,6 +128,8 @@ export class GildedRose {
             return new Brie();
         } else if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
             return new BackstagePass();
+        } else if (item.name.startsWith("Conjured")) {
+            return new Conjured();
         }
         return new ItemCategory();
     }
