@@ -11,12 +11,18 @@ export class Item {
 }
 
 class ItemCategory {
-    updateOneItem(item: Item) {
-        this.updateItemQuality(item);
+    private item: Item;
 
-        this.updateDaysTilExpired(item);
-        if (item.daysTilExpired < 0) {
-            this.updateExpired(item);
+    constructor(item: Item) {
+        this.item = item;
+    }
+
+    updateOneItem() {
+        this.updateItemQuality(this.item);
+
+        this.updateDaysTilExpired(this.item);
+        if (this.item.daysTilExpired < 0) {
+            this.updateExpired(this.item);
         }
     }
 
@@ -115,7 +121,7 @@ export class GildedRose {
     updateQuality() {
         this.items.forEach(item => {
             let category= this.categorize(item);
-            category.updateOneItem(item);
+            category.updateOneItem();
         });
 
         return this.items;
@@ -123,15 +129,15 @@ export class GildedRose {
 
     private categorize(item: Item): ItemCategory {
         if (item.name == 'Sulfuras, Hand of Ragnaros') {
-            return new Legendary();
+            return new Legendary(item);
         } else if (item.name == 'Aged Brie') {
-            return new Brie();
+            return new Brie(item);
         } else if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
-            return new BackstagePass();
+            return new BackstagePass(item);
         } else if (item.name.startsWith("Conjured")) {
-            return new Conjured();
+            return new Conjured(item);
         }
-        return new ItemCategory();
+        return new ItemCategory(item);
     }
 
 
