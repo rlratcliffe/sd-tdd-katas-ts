@@ -10,6 +10,88 @@ export class Item {
     }
 }
 
+class ItemCategory {
+    updateOneItem(item: Item) {
+        this.updateItemQuality(item);
+
+        this.updateDaysTilExpired(item);
+        if (item.daysTilExpired < 0) {
+            this.updateExpired(item);
+        }
+    }
+
+    protected updateExpired(item: Item) {
+        this.decrementQuality(item);
+    }
+
+    protected updateDaysTilExpired(item: Item) {
+        item.daysTilExpired = item.daysTilExpired - 1;
+    }
+
+    protected updateItemQuality(item: Item) {
+        this.decrementQuality(item);
+    }
+
+    protected incrementQuality(item: Item) {
+        if (item.quality < 50) {
+            item.quality = item.quality + 1
+        }
+    }
+
+    protected decrementQuality(item: Item) {
+        if (item.quality > 0) {
+            item.quality = item.quality - 1
+        }
+    }
+}
+
+class Legendary extends ItemCategory {
+    // @ts-ignore
+    protected updateExpired(item: Item) {
+    }
+    // @ts-ignore
+    protected updateDaysTilExpired(item: Item) {
+    }
+    // @ts-ignore
+    protected updateItemQuality(item: Item) {
+
+    }
+}
+
+class Brie extends ItemCategory {
+    protected updateExpired(item: Item) {
+        this.incrementQuality(item);
+    }
+
+    protected updateDaysTilExpired(item: Item) {
+        item.daysTilExpired = item.daysTilExpired - 1;
+    }
+
+    protected updateItemQuality(item: Item) {
+        this.incrementQuality(item);
+    }
+}
+
+class BackstagePass extends ItemCategory {
+    protected updateExpired(item: Item) {
+        item.quality = 0
+    }
+
+    protected updateDaysTilExpired(item: Item) {
+        item.daysTilExpired = item.daysTilExpired - 1;
+    }
+
+    protected updateItemQuality(item: Item) {
+        this.incrementQuality(item);
+        if (item.daysTilExpired < 11) {
+            this.incrementQuality(item);
+        }
+        if (item.daysTilExpired < 6) {
+            this.incrementQuality(item);
+        }
+    }
+}
+
 export class GildedRose {
     items: Array<Item>;
 
@@ -19,60 +101,23 @@ export class GildedRose {
 
     updateQuality() {
         this.items.forEach(item => {
-            this.updateOneItem(item);
+            let category= this.categorize(item);
+            category.updateOneItem(item);
         });
 
         return this.items;
     }
 
-    private updateOneItem(item: Item) {
-        this.updateItemQuality(item);
-
-        this.updateDaysTilExpired(item);
-        if (item.daysTilExpired < 0) {
-            this.updateExpired(item);
-        }
-    }
-
-    private updateExpired(item: Item) {
-        if (item.name == 'Aged Brie') {
-            this.incrementQuality(item);
+    private categorize(item: Item): ItemCategory {
+        if (item.name == 'Sulfuras, Hand of Ragnaros') {
+            return new Legendary();
+        } else if (item.name == 'Aged Brie') {
+            return new Brie();
         } else if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
-            item.quality = 0
-        } else if (item.name == 'Sulfuras, Hand of Ragnaros') {
-        } else this.decrementQuality(item);
-    }
-
-    private updateDaysTilExpired(item: Item) {
-        if (item.name != 'Sulfuras, Hand of Ragnaros') {
-            item.daysTilExpired = item.daysTilExpired - 1;
+            return new BackstagePass();
         }
+        return new ItemCategory();
     }
 
-    private updateItemQuality(item: Item) {
-        if (item.name == 'Aged Brie') {
-            this.incrementQuality(item);
-        } else if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
-            this.incrementQuality(item);
-            if (item.daysTilExpired < 11) {
-                this.incrementQuality(item);
-            }
-            if (item.daysTilExpired < 6) {
-                this.incrementQuality(item);
-            }
-        } else if (item.name == 'Sulfuras, Hand of Ragnaros') {
-        } else this.decrementQuality(item);
-    }
 
-    private incrementQuality(item: Item) {
-        if (item.quality < 50) {
-            item.quality = item.quality + 1
-        }
-    }
-
-    private decrementQuality(item: Item) {
-        if (item.quality > 0) {
-            item.quality = item.quality - 1
-        }
-    }
 }
