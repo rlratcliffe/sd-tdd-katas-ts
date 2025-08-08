@@ -8,6 +8,18 @@ export class Item {
         this.daysTilExpired = daysTilExpired;
         this.quality = quality;
     }
+
+    incrementQuality() {
+        if (this.quality < 50) {
+            this.quality = this.quality + 1
+        }
+    }
+
+    decrementQuality() {
+        if (this.quality > 0) {
+            this.quality = this.quality - 1
+        }
+    }
 }
 
 class ItemCategory {
@@ -27,7 +39,7 @@ class ItemCategory {
     }
 
     protected updateExpired(item: Item) {
-        this.decrementQuality(item);
+        item.decrementQuality();
     }
 
     protected updateDaysTilExpired(item: Item) {
@@ -35,19 +47,7 @@ class ItemCategory {
     }
 
     protected updateItemQuality(item: Item) {
-        this.decrementQuality(item);
-    }
-
-    protected incrementQuality(item: Item) {
-        if (item.quality < 50) {
-            item.quality = item.quality + 1
-        }
-    }
-
-    protected decrementQuality(item: Item) {
-        if (item.quality > 0) {
-            item.quality = item.quality - 1
-        }
+        item.decrementQuality();
     }
 }
 
@@ -60,13 +60,12 @@ class Legendary extends ItemCategory {
     }
     // @ts-ignore
     protected updateItemQuality(item: Item) {
-
     }
 }
 
 class Brie extends ItemCategory {
     protected updateExpired(item: Item) {
-        this.incrementQuality(item);
+        item.incrementQuality();
     }
 
     protected updateDaysTilExpired(item: Item) {
@@ -74,7 +73,7 @@ class Brie extends ItemCategory {
     }
 
     protected updateItemQuality(item: Item) {
-        this.incrementQuality(item);
+        item.incrementQuality();
     }
 }
 
@@ -88,12 +87,12 @@ class BackstagePass extends ItemCategory {
     }
 
     protected updateItemQuality(item: Item) {
-        this.incrementQuality(item);
+        item.incrementQuality();
         if (item.daysTilExpired < 11) {
-            this.incrementQuality(item);
+            item.incrementQuality();
         }
         if (item.daysTilExpired < 6) {
-            this.incrementQuality(item);
+            item.incrementQuality();
         }
     }
 }
@@ -101,13 +100,13 @@ class BackstagePass extends ItemCategory {
 export class Conjured extends ItemCategory {
 
     protected updateExpired(item: Item) {
-        this.decrementQuality(item);
-        this.decrementQuality(item);
+        item.decrementQuality();
+        item.decrementQuality();
     }
 
     protected updateItemQuality(item: Item) {
-        this.decrementQuality(item);
-        this.decrementQuality(item);
+        item.decrementQuality();
+        item.decrementQuality();
     }
 }
 
