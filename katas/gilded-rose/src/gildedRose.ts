@@ -22,91 +22,97 @@ export class Item {
     }
 }
 
-class ItemCategory {
-    private item: Item;
+interface I_ItemCategory {
+    updateDaysTilExpired(): void;
+    updateExpired(): void;
+    updateItemQuality(): void;
+    updateAllProperties(): void;
+}
+
+class ItemCategory implements I_ItemCategory {
+    protected item: Item;
 
     constructor(item: Item) {
         this.item = item;
     }
 
-    updateOneItem() {
-        this.updateItemQuality(this.item);
+    updateExpired() {
+        this.item.decrementQuality();
+    }
 
-        this.updateDaysTilExpired(this.item);
+    updateDaysTilExpired() {
+        this.item.daysTilExpired = this.item.daysTilExpired - 1;
+    }
+
+    updateItemQuality() {
+        this.item.decrementQuality();
+    }
+
+    updateAllProperties() {
+        this.updateItemQuality();
+        this.updateDaysTilExpired();
         if (this.item.daysTilExpired < 0) {
-            this.updateExpired(this.item);
+            this.updateExpired();
         }
-    }
-
-    protected updateExpired(item: Item) {
-        item.decrementQuality();
-    }
-
-    protected updateDaysTilExpired(item: Item) {
-        item.daysTilExpired = item.daysTilExpired - 1;
-    }
-
-    protected updateItemQuality(item: Item) {
-        item.decrementQuality();
     }
 }
 
 class Legendary extends ItemCategory {
     // @ts-ignore
-    protected updateExpired(item: Item) {
+    updateExpired() {
     }
     // @ts-ignore
-    protected updateDaysTilExpired(item: Item) {
+    updateDaysTilExpired() {
     }
     // @ts-ignore
-    protected updateItemQuality(item: Item) {
+    updateItemQuality() {
     }
 }
 
 class Brie extends ItemCategory {
-    protected updateExpired(item: Item) {
-        item.incrementQuality();
+    updateExpired() {
+        this.item.incrementQuality();
     }
 
-    protected updateDaysTilExpired(item: Item) {
-        item.daysTilExpired = item.daysTilExpired - 1;
+    updateDaysTilExpired() {
+        this.item.daysTilExpired = this.item.daysTilExpired - 1;
     }
 
-    protected updateItemQuality(item: Item) {
-        item.incrementQuality();
+    updateItemQuality() {
+        this.item.incrementQuality();
     }
 }
 
 class BackstagePass extends ItemCategory {
-    protected updateExpired(item: Item) {
-        item.quality = 0
+    updateExpired() {
+        this.item.quality = 0
     }
 
-    protected updateDaysTilExpired(item: Item) {
-        item.daysTilExpired = item.daysTilExpired - 1;
+    updateDaysTilExpired() {
+        this.item.daysTilExpired = this.item.daysTilExpired - 1;
     }
 
-    protected updateItemQuality(item: Item) {
-        item.incrementQuality();
-        if (item.daysTilExpired < 11) {
-            item.incrementQuality();
+    updateItemQuality() {
+        this.item.incrementQuality();
+        if (this.item.daysTilExpired < 11) {
+            this.item.incrementQuality();
         }
-        if (item.daysTilExpired < 6) {
-            item.incrementQuality();
+        if (this.item.daysTilExpired < 6) {
+            this.item.incrementQuality();
         }
     }
 }
 
 export class Conjured extends ItemCategory {
 
-    protected updateExpired(item: Item) {
-        item.decrementQuality();
-        item.decrementQuality();
+    updateExpired() {
+        this.item.decrementQuality();
+        this.item.decrementQuality();
     }
 
-    protected updateItemQuality(item: Item) {
-        item.decrementQuality();
-        item.decrementQuality();
+    updateItemQuality() {
+        this.item.decrementQuality();
+        this.item.decrementQuality();
     }
 }
 
@@ -119,25 +125,41 @@ export class GildedRose {
 
     updateQuality() {
         this.items.forEach(item => {
-            let category= this.categorize(item);
-            category.updateOneItem();
+            const itemCategory = new ItemCategory(item);
+            const context = new Context(itemCategory);
+
+            if (item.name == 'Sulfuras, Hand of Ragnaros') {
+                context.setStrategy(new Legendary(item));
+            } else if (item.name == 'Aged Brie') {
+                context.setStrategy(new Brie(item))
+            } else if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
+                context.setStrategy(new BackstagePass(item))
+            } else if (item.name.startsWith("Conjured")) {
+                context.setStrategy(new Conjured(item))
+            }
+
+            context.processUpdate();
         });
 
         return this.items;
     }
 
-    private categorize(item: Item): ItemCategory {
-        if (item.name == 'Sulfuras, Hand of Ragnaros') {
-            return new Legendary(item);
-        } else if (item.name == 'Aged Brie') {
-            return new Brie(item);
-        } else if (item.name == 'Backstage passes to a TAFKAL80ETC concert') {
-            return new BackstagePass(item);
-        } else if (item.name.startsWith("Conjured")) {
-            return new Conjured(item);
-        }
-        return new ItemCategory(item);
+
+
+}
+
+export class Context {
+    private strategy: ItemCategory;
+
+    constructor(strategy: ItemCategory) {
+        this.strategy = strategy;
     }
 
+    setStrategy(strategy: ItemCategory) {
+        this.strategy = strategy;
+    }
 
+    processUpdate() {
+        this.strategy.updateAllProperties();
+    }
 }
