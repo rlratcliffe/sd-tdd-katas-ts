@@ -15,7 +15,8 @@ router.post('/', async (req, res) => {
     const { name, email, preferred_greeting_style, preferred_time_format, include_quotes } = req.body;
     
     if (!name) {
-      return res.status(400).json({ error: 'Name is required' });
+      res.status(400).json({ error: 'Name is required' });
+      return;
     }
 
     const userData: CreateUserData = {
@@ -31,7 +32,8 @@ router.post('/', async (req, res) => {
   } catch (error: any) {
     console.error('Error creating user:', error);
     if (error.code === '23505') {
-      return res.status(409).json({ error: 'Email already exists' });
+      res.status(409).json({ error: 'Email already exists' });
+      return;
     }
     res.status(500).json({ error: 'Failed to create user' });
   }
@@ -41,12 +43,14 @@ router.get('/:id/preferences', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+      res.status(400).json({ error: 'Invalid user ID' });
+      return;
     }
 
     const user = await userRepository.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: 'User not found' });
+      return;
     }
 
     const { id, name, preferred_greeting_style, preferred_time_format, include_quotes, created_at, updated_at } = user;
@@ -69,7 +73,8 @@ router.put('/:id/preferences', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+        res.status(400).json({ error: 'Invalid user ID' });
+      return;
     }
 
     const { preferred_greeting_style, preferred_time_format, include_quotes } = req.body;
@@ -81,7 +86,8 @@ router.put('/:id/preferences', async (req, res) => {
 
     const user = await userRepository.updatePreferences(userId, preferences);
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: 'User not found' });
+      return;
     }
 
     res.json(user);
@@ -95,12 +101,14 @@ router.delete('/:id', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+        res.status(400).json({ error: 'Invalid user ID' });
+      return;
     }
 
     const deleted = await userRepository.delete(userId);
     if (!deleted) {
-      return res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: 'User not found' });
+      return;
     }
 
     res.status(204).send();
@@ -114,7 +122,8 @@ router.get('/:id/greeting-history', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+        res.status(400).json({ error: 'Invalid user ID' });
+      return;
     }
 
     const limit = Math.min(parseInt(req.query.limit as string) || 10, 50);
@@ -131,13 +140,15 @@ router.post('/:id/greeting-history', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+        res.status(400).json({ error: 'Invalid user ID' });
+      return;
     }
 
     const { greeting_message, greeting_type, time_of_day } = req.body;
     
     if (!greeting_message || !greeting_type) {
-      return res.status(400).json({ error: 'greeting_message and greeting_type are required' });
+      res.status(400).json({ error: 'greeting_message and greeting_type are required' });
+      return;
     }
 
     const historyEntry = await greetingHistoryRepository.create({
@@ -158,7 +169,8 @@ router.get('/:id/greeting-history/stats', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+        res.status(400).json({ error: 'Invalid user ID' });
+      return;
     }
 
     const stats = await greetingHistoryRepository.getStatsByUserId(userId);
@@ -173,7 +185,8 @@ router.get('/:id/favorite-quotes', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+        res.status(400).json({ error: 'Invalid user ID' });
+      return;
     }
 
     const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
@@ -190,18 +203,21 @@ router.post('/:id/favorite-quotes', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
     if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+        res.status(400).json({ error: 'Invalid user ID' });
+      return;
     }
 
     const { quote_content, quote_author } = req.body;
     
     if (!quote_content) {
-      return res.status(400).json({ error: 'quote_content is required' });
+      res.status(400).json({ error: 'quote_content is required' });
+      return;
     }
 
     const exists = await favoriteQuoteRepository.exists(userId, quote_content);
     if (exists) {
-      return res.status(409).json({ error: 'Quote already in favorites' });
+      res.status(409).json({ error: 'Quote already in favorites' });
+      return;
     }
 
     const favoriteQuote = await favoriteQuoteRepository.create({
@@ -223,12 +239,14 @@ router.delete('/:id/favorite-quotes/:quoteId', async (req, res) => {
     const quoteId = parseInt(req.params.quoteId);
     
     if (isNaN(userId) || isNaN(quoteId)) {
-      return res.status(400).json({ error: 'Invalid user ID or quote ID' });
+      res.status(400).json({ error: 'Invalid user ID or quote ID' });
+      return;
     }
 
     const deleted = await favoriteQuoteRepository.delete(quoteId, userId);
     if (!deleted) {
-      return res.status(404).json({ error: 'Quote not found or not owned by user' });
+      res.status(404).json({ error: 'Quote not found or not owned by user' });
+      return;
     }
 
     res.status(204).send();

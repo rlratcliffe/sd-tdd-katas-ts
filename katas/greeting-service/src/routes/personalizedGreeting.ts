@@ -16,12 +16,14 @@ router.get('/:userId', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
     if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+      res.status(400).json({ error: 'Invalid user ID' });
+      return;
     }
 
     const user = await userRepository.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: 'User not found' });
+      return;
     }
 
     const message = greetingService.getPersonalizedGreeting(
@@ -48,12 +50,14 @@ router.get('/:userId/with-favorite-quote', async (req, res) => {
   try {
     const userId = parseInt(req.params.userId);
     if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Invalid user ID' });
+      res.status(400).json({ error: 'Invalid user ID' });
+      return;
     }
 
     const user = await userRepository.findById(userId);
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      res.status(404).json({ error: 'User not found' });
+      return;
     }
 
     if (!user.include_quotes) {
@@ -70,7 +74,8 @@ router.get('/:userId/with-favorite-quote', async (req, res) => {
         time_of_day: getCurrentTimeOfDay()
       });
 
-      return res.json({ message });
+      res.json({ message });
+      return;
     }
 
     const favoriteQuote = await favoriteQuoteRepository.getRandomByUserId(userId);

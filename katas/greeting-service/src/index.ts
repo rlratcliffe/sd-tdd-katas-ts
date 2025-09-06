@@ -14,13 +14,24 @@ app.use('/api/greeting', personalizedGreetingRoutes);
 
 async function startServer() {
   try {
-    await initDatabase();
+    if (process.env.SKIP_DB_INIT !== 'true') {
+      await initDatabase();
+      console.log('Database connection established');
+    } else {
+      console.log('Database initialization skipped (SKIP_DB_INIT=true)');
+    }
+    
     app.listen(PORT, () => {
       console.log(`Greeting service running on port ${PORT}`);
-      console.log('Database connection established');
+      if (process.env.SKIP_DB_INIT === 'true') {
+        console.log('WARNING: Database features disabled. Basic greeting endpoints only.');
+      }
     });
   } catch (error) {
     console.error('Failed to start server:', error);
+    if (process.env.SKIP_DB_INIT !== 'true') {
+      console.log('TIP: Set SKIP_DB_INIT=true to run without database for basic features');
+    }
     process.exit(1);
   }
 }
