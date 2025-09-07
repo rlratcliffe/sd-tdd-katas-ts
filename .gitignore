@@ -4,3 +4,6 @@ package-lock.json
 *.iml
 reports/
 dist/
+coverage/
+*.claude
+.claude/
