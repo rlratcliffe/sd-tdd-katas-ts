@@ -2,7 +2,7 @@ import { Pool } from 'pg';
 import { GreetingHistory, CreateGreetingHistoryData } from '../models/GreetingHistory';
 
 export class GreetingHistoryRepository {
-  constructor(private pool: Pool) {}
+  constructor(private readonly pool: Pool) {}
 
   async create(historyData: CreateGreetingHistoryData): Promise<GreetingHistory> {
     const client = await this.pool.connect();
