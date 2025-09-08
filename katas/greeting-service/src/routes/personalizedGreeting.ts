@@ -59,7 +59,7 @@ router.get('/:userId/with-favorite-quote', async (req, res) => {
       res.status(404).json({ error: 'User not found' });
       return;
     }
-
+    console.log(`user ${JSON.stringify(user)}`)
     if (!user.include_quotes) {
       const message = greetingService.getPersonalizedGreeting(
         user.name,
