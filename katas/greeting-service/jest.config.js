@@ -3,10 +3,13 @@ module.exports = {
   testEnvironment: 'node',
   roots: ['<rootDir>/src', '<rootDir>/tests'],
   testMatch: [
-    '**/tests/**/*.+(ts|tsx|js)',
-    '**/*.(test|spec|acceptance).+(ts|tsx|js)'
+    '**/*.(test|spec).+(ts|tsx|js)'
+  ],
+  testPathIgnorePatterns: [
+    '.*\\.acceptance\\.(test|spec)\\.(ts|tsx|js)$'
   ],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest'
-  }
+  },
+  setupFilesAfterEnv: ['jest-extended/all']
 };
