@@ -1,5 +1,5 @@
 {
-  "name": "@katas/everkraft",
+  "name": "@katas/rpg-combat",
   "version": "1.0.0",
   "description": "RPG game used to learn TDD",
   "main": "dist/index.js",
