@@ -7,8 +7,8 @@ The problem is broken down into several user stories to help you to focus on doi
 ## Damage and Health
 
 1. All Characters, when created, have:
-   * Health, starting at 1000
-   * May be Alive or Dead, starting Alive
+   * ~~Health, starting at 1000~~
+   * ~~May be Alive or Dead, starting Alive~~
 
 2. Characters can Deal Damage to Characters:
    * Damage is subtracted from Health
