@@ -11,6 +11,9 @@ class Character {
 
     receiveDamage(amount: number) {
         this.health -= amount;
+        if (this.health === 0) {
+            this.status = 'Dead';
+        }
     }
 }
 
@@ -36,6 +39,14 @@ describe('Character', () => {
         const hero = new Character('Hero', 1000, 'Alive');
 
         hero.receiveDamage(1000);
+
+        expect(hero).toEqual({name: 'Hero', health: 0, status: 'Dead'});
+    });
+
+    it('should receive 2000 damage', () => {
+        const hero = new Character('Hero', 1000, 'Alive');
+
+        hero.receiveDamage(2000);
 
         expect(hero).toEqual({name: 'Hero', health: 0, status: 'Dead'});
     });
