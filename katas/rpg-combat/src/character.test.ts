@@ -9,13 +9,12 @@ class Character {
         this.status = status;
     }
 
-    receiveDamage(_amount: number) {
-
+    receiveDamage(amount: number) {
+        this.health -= amount;
     }
 }
 
 describe('Character', () => {
-    // Test List
 
     it('should receive 0 damage and reduce no health', () => {
         const hero = new Character('Hero', 1000, 'Alive');
@@ -30,6 +29,14 @@ describe('Character', () => {
 
         hero.receiveDamage(1);
 
-        expect(hero).toEqual({name: 'Hero', health: 999, status: 'Alive'});
+        expect(hero.health).toEqual(999);
+    });
+
+    it('should die when health reaches zero', () => {
+        const hero = new Character('Hero', 1000, 'Alive');
+
+        hero.receiveDamage(1000);
+
+        expect(hero).toEqual({name: 'Hero', health: 0, status: 'Dead'});
     });
 });
