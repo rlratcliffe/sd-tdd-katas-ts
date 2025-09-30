@@ -1,10 +1,15 @@
 class Character {
     health: number;
-    constructor(name: string, health: number, status: string) {
+    name: string;
+    status: string;
 
+    constructor(name: string, health: number, status: string) {
+        this.name = name;
+        this.health = health;
+        this.status = status;
     }
 
-    receiveDamage(amount: number) {
+    receiveDamage(_amount: number) {
 
     }
 }
@@ -19,6 +24,6 @@ describe('Character', () => {
 
         hero.receiveDamage(0);
 
-        expect(hero.health).toBe(1000);
+        expect(hero).toEqual({"name": 'Hero', "health": 1000, "status": 'Alive'});
     });
 });
